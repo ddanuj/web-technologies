@@ -1,0 +1,66 @@
+<html lang="en" >
+<head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://code.highcharts.com/stock/highstock.js"></script>
+</head>
+<body>
+<div id="stoch_chart" class="chart"></div>
+<script type="text/javascript">
+            $(document).ready(function(){
+                var stochSlowDJson = $.parseJSON(Android.getStochSlowD());
+                var stochSlowKJson = $.parseJSON(Android.getStochSlowK());
+       var stochSlowDArr = new Array();
+            $.each(stochSlowDJson, function (key, value) {
+                $.each(value, function (key1, value1) {
+                    stochSlowDArr.push(new Array(Number(key1), value1));
+                });
+            });
+       var stochSlowKArr = new Array();
+            $.each(stochSlowKJson, function (key, value) {
+                $.each(value, function (key1, value1) {
+                    stochSlowKArr.push(new Array(Number(key1), value1));
+                });
+            });
+       Highcharts.chart('stoch_chart', {
+       chart: {
+                                            zoomType: 'x'
+                                        },
+                                        title: {
+                                            text: Android.getTitle() + ' Oscillator'
+                                        },
+                                        subtitle: {
+                                            text: '<a href="https://www.alphavantage.co/ style="color: blue">Source: Alpha Vantage</a>'
+                                        },
+                                        xAxis: [{
+                                            type: 'datetime',
+                                            labels: {
+                                                format: '{value:%m/%d}'
+                                            }
+                                        }],
+                                        yAxis: [{
+                                            title: {
+                                                text: Android.getActiveChart().toUpperCase()
+                                            }
+                                        }],
+                                        series: [{
+                                            name: Android.getTicker() + ' SlowD',
+                                            type: 'line',
+                                            data: stochSlowDArr.reverse()
+                                        },{
+                                            name: Android.getTicker() + ' SlowK',
+                                            type: 'line',
+                                            data: stochSlowKArr.reverse()
+                                        }]
+       });
+       var chartImg = $("#stoch_chart").highcharts();
+        var imgData = {
+                    options: chartImg.options,
+                    filename: Android.getTicker() + "_stoch_chart",
+                    type: 'image/png',
+                    async: true
+                };
+        alert(JSON.stringify(imgData));
+            });
+</script>
+</body>
+</html>

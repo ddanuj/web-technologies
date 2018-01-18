@@ -1,0 +1,106 @@
+<html lang="en">
+<head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://code.highcharts.com/stock/highstock.js"></script>
+    <script src="https://code.highcharts.com/modules/exporting.js"></script>
+    <script src="https://code.highcharts.com/modules/offline-exporting.js"></script>
+</head>
+<body>
+<div id="price_chart" class="chart"></div>
+<script type="text/javascript">
+    $(document).ready(function(){
+        var priceArrJson = $.parseJSON(Android.getPriceArray());
+        var volumeArrJson = $.parseJSON(Android.getVolumeArray());
+
+        var priceArr = new Array();
+            $.each(priceArrJson, function (key, value) {
+                $.each(value, function (key1, value1) {
+                    priceArr.push(new Array(Number(key1), value1));
+                });
+            });
+
+        var volumeArr = new Array();
+            $.each(volumeArrJson, function (key, value) {
+                $.each(value, function (key1, value1) {
+                    volumeArr.push(new Array(Number(key1), value1));
+                });
+            });
+
+        Highcharts.chart('price_chart',{
+                                        chart: {
+                                            zoomType: 'x'
+                                        },
+                                        title: {
+                                            text: Android.getTicker() + ' Stock Price and Volume'
+                                        },
+                                        subtitle: {
+                                            text: '<a href="https://www.alphavantage.co/ style="color: blue">Source: Alpha Vantage</a>'
+                                        },
+                                        xAxis: [{
+                                            type: 'datetime',
+                                            labels: {
+                                                format: '{value:%m/%d}'
+                                            },
+                                            tickLength: 0,
+                                            tickInterval: 24 * 3600 * 1000 * 7
+                                        }],
+                                        yAxis: [{
+                                            title: {
+                                                text: "Stock Price",
+                                            },
+                                            tickInterval: 30.00
+                                        }, {
+                                            title: {
+                                                text: "Volume"
+                                            },
+                                            tickInterval: 2000 * 10000,
+                                            opposite: true
+                                        }],
+                                        tooltip: {
+                                            formatter: function () {
+                                                var toDate = new Date(this.x).getDate();
+                                                var toMonth = new Date(this.x).getMonth() + 1;
+                                                var symbol = '<span style="color:#0000ff">\u25CF</span>';
+                                                return toMonth + "/" + toDate + '<br/>' + symbol
+                                                    + this.series.name + " : " + '<b>' + this.y + '</b>';
+                                            }
+                                        },
+                                        plotOptions: {
+                                            area: {
+                                                lineColor: '#0000ff',
+                                                lineWidth: 1,
+                                                marker: {
+                                                    lineWidth: 1,
+                                                    fillColor: '#0000ff',
+                                                    lineColor: null
+                                                }
+                                            }
+                                        },
+                                        series: [{
+                                            name: 'Price',
+                                            type: 'area',
+                                            yAxis: 0,
+                                            data: priceArr.reverse()
+                                        }, {
+                                            name: 'Volume',
+                                            type: 'column',
+                                            yAxis: 1,
+                                            data: volumeArr.reverse(),
+                                            pointWidth: 0.9,
+                                            color: '#ff0000'
+                                        }]
+                                    });
+        var chartImg = $("#price_chart").highcharts();
+        var imgData = {
+                    options: chartImg.options,
+                    filename: Android.getTicker() + "_price_chart",
+                    type: 'image/png',
+                    async: true
+                };
+        alert(JSON.stringify(imgData));
+
+
+    });
+</script>
+</body>
+</html>

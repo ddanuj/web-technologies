@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Homework 8</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular-animate.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular-aria.min.js"></script>
+    <script src="https://cdn.gitcdn.link/cdn/angular/bower-material/v1.1.5/angular-material.js"></script>
+    <script src="https://code.highcharts.com/stock/highstock.js"></script>
+    <script src="https://code.highcharts.com/modules/exporting.js"></script>
+    <script src="https://code.highcharts.com/modules/offline-exporting.js"></script>
+    <script src="http://code.jquery.com/ui/1.10.2/jquery-ui.js"></script>
+    <script src="homework8_angular.js"></script>
+    <link rel="stylesheet" href="https://material.angularjs.org/1.1.5/docs.css">
+    <link rel="stylesheet" href="https://cdn.gitcdn.link/cdn/angular/bower-material/v1.1.5/angular-material.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css">
+    <link rel="stylesheet" type="text/css" href="homework8.css">
+</head>
+
+<body ng-app="valiateStockFormApp" ng-controller="validateStockFormController as ctrl" ng-cloak>
+    <script>
+        window.fbAsyncInit = function () {
+            FB.init({
+                appId: '185673858673950',
+                xfbml: true,
+                version: 'v2.11'
+            });
+            FB.AppEvents.logPageView();
+        };
+
+        (function (d, s, id) {
+            var js, fjs = d.getElementsByTagName(s)[0];
+            if (d.getElementById(id)) { return; }
+            js = d.createElement(s); js.id = id;
+            js.src = "https://connect.facebook.net/en_US/sdk.js";
+            fjs.parentNode.insertBefore(js, fjs);
+        }(document, 'script', 'facebook-jssdk'));
+    </script>
+    <div id="parent_div" class="container">
+        <div>&nbsp;</div>
+        <div id="body_div_search" class="container">
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <h3 class="text-center">
+                        Stock Market Search
+                    </h3>
+                    <form name="stockForm" novalidate ng-submit="$event.preventDefault()">
+                        <div id="stock_form" layout-sm="row">
+                            <div id="body_div_search_form_label" class="col-xs-12 col-sm-3">
+                                <label>Enter Stock Ticker Symbol:
+                                    <span style="color:red">*</span>
+                                </label>
+                            </div>
+                            <div class="col-xs-12 col-sm-6">
+                                <div id="auto_complete" ng-style="borderColor">
+                                    <md-autocomplete required id="auto_complete_input" md-input-name="stockInput" md-selected-item="ctrl.selectedItem" md-search-text="ctrl.searchText"
+                                        md-items="item in ctrl.querySearch(ctrl.searchText)" md-item-text="item.display" md-min-length="1"
+                                        md-clear-button="false" placeholder="e.g. AAPL">
+                                        <md-item-template>
+                                            <span md-highlight-text="ctrl.searchText" md-highlight-flags="^i">{{item.display}}</span>
+                                        </md-item-template>
+                                    </md-autocomplete>
+                                </div>
+                                <div id="error_msg" ng-messages="stockForm.stockInput.$error" ng-if="stockForm.stockInput.$invalid && stockForm.stockInput.$touched">
+                                    <div ng-message="required">Please enter a stock ticker symbol.</div>
+                                </div>
+                            </div>
+                            <div class="col-xs-12 col-sm-3">
+                                <div id="search_form_buttons">
+                                    <button type="button" class="btn btn-info body_div_search_form_buttons" ng-disabled="stockForm.$invalid" ng-click="submitStockForm(ctrl.searchText) ">
+                                        <span class="glyphicon glyphicon-search "></span>&nbsp;&nbsp;Get Quote
+                                    </button>
+                                    <button type="button" class="btn btn-default body_div_search_form_buttons" ng-click="clearStockForm()">
+                                        <span class="glyphicon glyphicon-refresh "></span>&nbsp;Clear
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <hr>
+        </div>
+        <div id="body_div_data" class="container">
+            <div class="panel panel-default">
+                <div id="favorite_list" class="fav-list-show-hide" ng-show="!showStockInfo">
+                    <div class="panel panel-default body_div_data_inner">
+                        <div class="panel-heading">
+                            <div class="row">
+                                <div class="panel-title col-xs-6 col-sm-6">
+                                    <strong>Favorite List</strong>
+                                </div>
+                                <div class="col-xs-6 col-sm-6 text-right">
+                                    <div class="row">
+                                        <span class="lg-view">Automatic Refresh:</span>
+                                        <input id="auto_refresh" type="checkbox" name="auto_refresh_check" data-toggle="toggle">
+                                        <button type="button" class="btn btn-default" name="refresh_favorite" ng-click="updateFavoriteList()">
+                                            <span class="glyphicon glyphicon-refresh"></span>
+                                        </button>
+                                        <button type="button" class="btn btn-default" name="forward" ng-disabled="showStockInfo == false && stockInfoChartReady == false"
+                                            ng-click="toggleStockInfo()">
+                                            <span class="glyphicon glyphicon-chevron-right"></span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="panel-body">
+                            <div class="row">
+                                <form class="form-inline">
+                                    <div class="form-group col-xs-12 col-sm-4">
+                                        <label for="sort" class="col-xs-12 col-sm-4">Sort By</label>
+                                        <select id="sort" ng-model="sortOptions.value" ng-change="changedSortValue(sortOptions.value)" ng-options="sortOption for sortOption in sortOptions.values"
+                                            class="form-control">
+                                        </select>
+                                    </div>
+                                    <div class="form-group col-xs-12 col-sm-4">
+                                        <label for="order" class="col-xs-12 col-sm-4">Order</label>
+                                        <select id="order" ng-disabled="sortOptions.value == 'Default'" ng-model="orderOptions.value" ng-change="changedOrderValue(orderOptions.value)"
+                                            data-ng-options="orderOption for orderOption in orderOptions.values" class="form-control">
+                                        </select>
+                                    </div>
+                                    <div id="body_div_data_table">
+                                        <div class="table-responsive">
+                                            <table id="favorite_list_table" class="table">
+                                                <thead class="grey_background">
+                                                    <tr>
+                                                        <th>Symbol</th>
+                                                        <th>Stock Price</th>
+                                                        <th>Change (Change Percent)</th>
+                                                        <th>Volume</th>
+                                                        <th></th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr ng-repeat="favoriteItem in favoriteList | orderBy: orderByFilter">
+                                                        <td>{{favoriteItem.symbol}}</td>
+                                                        <td>{{favoriteItem.price}}</td>
+                                                        <td ng-class="favoriteItem.change < 0 ? 'red-color' : 'green-color'">
+                                                            {{favoriteItem.change}}&nbsp;({{favoriteItem.changePercent}})
+                                                            <img ng-src="{{redArrow}}" ng-if="favoriteItem.change < 0">
+                                                            <img ng-src="{{greenArrow}}" ng-if="favoriteItem.change> 0">
+                                                        </td>
+                                                        <td>{{favoriteItem.volume}}</td>
+                                                        <td>
+                                                            <button type="button" class="btn btn-default" name="deleteBtn" ng-click="removeFromTable($index)">
+                                                                <span class="glyphicon glyphicon-trash"></span>
+                                                            </button>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="stock_info" class="stock-info-show-hide" ng-show="showStockInfo">
+                    <div class="panel panel-default body_div_data_inner">
+                        <div class="panel-heading">
+                            <div class="row">
+                                <div class="col-xs-4 col-sm-5">
+                                    <button type="button" class="btn btn-default" name="backward" ng-click="toggleStockInfo()">
+                                        <span class="glyphicon glyphicon-chevron-left"></span>
+                                    </button>
+                                </div>
+                                <div class="panel-title col-xs-6 col-sm-7">
+                                    <strong>Stock Details</strong>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="panel-body">
+                            <div>
+                                <ul class="nav nav-pills">
+                                    <li ng-class="{ 'active': isActive('current_stock') }">
+                                        <a data-toggle="tab" href="#current" ng-click="activate('current_stock')">
+                                            <span class="glyphicon glyphicon-dashboard"></span>&nbsp;
+                                            <span class="lg-view">Current Stock</span>
+                                            <span class="sm-view">Stock</span>
+                                        </a>
+                                    </li>
+                                    <li ng-class="{ 'active': isActive('historical_charts') }">
+                                        <a data-toggle="tab" href="#historical" ng-click="activate('historical_charts');">
+                                            <span class="glyphicon glyphicon-stats"></span>&nbsp;
+                                            <span class="lg-view">Historical Charts</span>
+                                            <span class="sm-view">Charts</span>
+                                        </a>
+                                    </li>
+                                    <li ng-class="{ 'active': isActive('news_feeds') }">
+                                        <a data-toggle="tab" href="#news" ng-click="activate('news_feeds');">
+                                            <span class="glyphicon glyphicon-link"></span>&nbsp;
+                                            <span class="lg-view">News Feeds</span>
+                                            <span class="sm-view">News</span>
+                                        </a>
+                                    </li>
+                                </ul>
+                                <hr/>
+                            </div>
+                            <div class="tab-content">
+                                <div class="tab-pane fade in active" id="current">
+                                    <div class="row">
+                                        <div class="col-sm-6">
+                                            <div class="row">
+                                                <div class="col-sm-6">
+                                                    <strong>Stock Details</strong>
+                                                </div>
+                                                <div class="col-sm-6 text-right">
+                                                    <button type="button" class="btn btn-default" name="favorite" ng-disabled="stockInfoChartReady == false" ng-click="markFavorite()">
+                                                        <span ng-class="favorite"></span>
+                                                    </button>
+                                                    <button type="button" class="btn btn-default" name="facebook" ng-disabled="stockInfoChartReady == false" ng-click="exportToFacebook()">
+                                                        <span>
+                                                            <img id="fb_img" src="http://cs-server.usc.edu:45678/hw/hw8/images/facebook.png" alt="Share On Facebook" />
+                                                        </span>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div id="stock_info_table" class="col-sm-12">
+                                                    <div ng-hide="stockInfoTableReady">
+                                                        <div id="stock_info_table_progressbar"></div>
+                                                    </div>
+                                                    <div id="stock_info_table_table" ng-show="stockInfoTableReady">
+                                                        <table class="table table-striped">
+                                                            <tr>
+                                                                <td>
+                                                                    <strong>Stock Ticker Symbol</strong>
+                                                                </td>
+                                                                <td>{{stockPriceInfo.symbol}}</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>
+                                                                    <strong>Last Price</strong>
+                                                                </td>
+                                                                <td>{{stockPriceInfo.last_price}}</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>
+                                                                    <strong>Change (Change Percent)</strong>
+                                                                </td>
+                                                                <td ng-class="{'red-color': changeColor === 'red', 'green-color': changeColor === 'green'}">
+                                                                    {{stockPriceInfo.change}}
+                                                                    <img ng-src="{{arrow}}">
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>
+                                                                    <strong>Timestamp</strong>
+                                                                </td>
+                                                                <td>{{currentTime}}</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>
+                                                                    <strong>Open</strong>
+                                                                </td>
+                                                                <td>{{stockPriceInfo.open}}</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>
+                                                                    <strong>Close</strong>
+                                                                </td>
+                                                                <td>{{stockPriceInfo.close}}</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>
+                                                                    <strong>Day's Range</strong>
+                                                                </td>
+                                                                <td>{{stockPriceInfo.range}}</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>
+                                                                    <strong>Volume</strong>
+                                                                </td>
+                                                                <td>{{stockPriceInfo.volume}}</td>
+                                                            </tr>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <ul class="nav nav-tabs">
+                                                <li ng-class="{ 'active': isActiveChart('price') }">
+                                                    <a data-toggle="tab" href="#price" ng-click="activateChart('price')">Price</a>
+                                                </li>
+                                                <li ng-class="{ 'active': isActiveChart('sma') }">
+                                                    <a data-toggle="tab" href="#sma" ng-click="activateChart('sma')">SMA</a>
+                                                </li>
+                                                <li ng-class="{ 'active': isActiveChart('ema') }">
+                                                    <a data-toggle="tab" href="#ema" ng-click="activateChart('ema')">EMA</a>
+                                                </li>
+                                                <li ng-class="{ 'active': isActiveChart('stoch') }">
+                                                    <a data-toggle="tab" href="#stoch" ng-click="activateChart('stoch')">STOCH</a>
+                                                </li>
+                                                <li ng-class="{ 'active': isActiveChart('rsi') }">
+                                                    <a data-toggle="tab" href="#rsi" ng-click="activateChart('rsi')">RSI</a>
+                                                </li>
+                                                <li ng-class="{ 'active': isActiveChart('adx') }">
+                                                    <a data-toggle="tab" href="#adx" ng-click="activateChart('adx')">ADX</a>
+                                                </li>
+                                                <li ng-class="{ 'active': isActiveChart('cci') }">
+                                                    <a data-toggle="tab" href="#cci" ng-click="activateChart('cci')">CCI</a>
+                                                </li>
+                                                <li ng-class="{ 'active': isActiveChart('bbands') }">
+                                                    <a data-toggle="tab" href="#bbands" ng-click="activateChart('bbands')">BBANDS</a>
+                                                </li>
+                                                <li ng-class="{ 'active': isActiveChart('macd') }">
+                                                    <a data-toggle="tab" href="#macd" ng-click="activateChart('macd')">MACD</a>
+                                                </li>
+                                            </ul>
+                                            <div class="tab-content">
+                                                <div class="tab-pane fade in active" id="price">
+                                                    <div class="row">
+                                                        <div id="price_chart" class="col-sm-12"></div>
+                                                    </div>
+                                                </div>
+                                                <div class="tab-pane fade" id="sma">
+                                                    <div class="row">
+                                                        <div id="sma_chart" class="col-sm-12"></div>
+                                                    </div>
+                                                </div>
+                                                <div class="tab-pane fade" id="ema">
+                                                    <div class="row">
+                                                        <div id="ema_chart" class="col-sm-12"></div>
+                                                    </div>
+                                                </div>
+                                                <div class="tab-pane fade" id="stoch">
+                                                    <div class="row">
+                                                        <div id="stoch_chart" class="col-sm-12"></div>
+                                                    </div>
+                                                </div>
+                                                <div class="tab-pane fade" id="rsi">
+                                                    <div class="row">
+                                                        <div id="rsi_chart" class="col-sm-12"></div>
+                                                    </div>
+                                                </div>
+                                                <div class="tab-pane fade" id="adx">
+                                                    <div class="row">
+                                                        <div id="adx_chart" class="col-sm-12"></div>
+                                                    </div>
+                                                </div>
+                                                <div class="tab-pane fade" id="cci">
+                                                    <div class="row">
+                                                        <div id="cci_chart" class="col-sm-12"></div>
+                                                    </div>
+                                                </div>
+                                                <div class="tab-pane fade" id="bbands">
+                                                    <div class="row">
+                                                        <div id="bbands_chart" class="col-sm-12"></div>
+                                                    </div>
+                                                </div>
+                                                <div class="tab-pane fade" id="macd">
+                                                    <div class="row">
+                                                        <div id="macd_chart" class="col-sm-12"></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="tab-pane fade" id="historical">
+                                    <div id="historical_price_chart"></div>
+                                </div>
+                                <div class="tab-pane fade" id="news">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

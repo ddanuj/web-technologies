@@ -1,0 +1,77 @@
+<html lang="en" >
+<head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://code.highcharts.com/stock/highstock.js"></script>
+</head>
+<body>
+<div id="bbands_chart" class="chart"></div>
+<script type="text/javascript">
+           $(document).ready(function(){
+                var bbandsUpperJson = $.parseJSON(Android.getBbandsUpper());
+                var bbandsMiddleJson = $.parseJSON(Android.getBbandsMiddle());
+                var bbandsLowerJson = $.parseJSON(Android.getBbandsLower());
+       var bbandsUpperArr = new Array();
+            $.each(bbandsUpperJson, function (key, value) {
+                $.each(value, function (key1, value1) {
+                    bbandsUpperArr.push(new Array(Number(key1), value1));
+                });
+            });
+       var bbandsMiddleArr = new Array();
+            $.each(bbandsMiddleJson, function (key, value) {
+                $.each(value, function (key1, value1) {
+                    bbandsMiddleArr.push(new Array(Number(key1), value1));
+                });
+            });
+       var bbandsLowerArr = new Array();
+            $.each(bbandsLowerJson, function (key, value) {
+                $.each(value, function (key1, value1) {
+                    bbandsLowerArr.push(new Array(Number(key1), value1));
+                });
+            });
+       Highcharts.chart('bbands_chart', {
+       chart: {
+                                            zoomType: 'x'
+                                        },
+                                        title: {
+                                            text: Android.getTitle()
+                                        },
+                                        subtitle: {
+                                            text: '<a href="https://www.alphavantage.co/ style="color: blue">Source: Alpha Vantage</a>'
+                                        },
+                                        xAxis: [{
+                                            type: 'datetime',
+                                            labels: {
+                                                format: '{value:%m/%d}'
+                                            }
+                                        }],
+                                        yAxis: [{
+                                            title: {
+                                                text: Android.getActiveChart().toUpperCase()
+                                            }
+                                        }],
+                                        series: [{
+                                            name: Android.getTicker() + ' Real Upper Band',
+                                            type: 'line',
+                                            data: bbandsUpperArr.reverse()
+                                        },{
+                                            name: Android.getTicker() + ' Real Lower Band',
+                                            type: 'line',
+                                            data: bbandsLowerArr.reverse()
+                                        },{
+                                            name: Android.getTicker() + ' Real Middle Band',
+                                            type: 'line',
+                                            data: bbandsMiddleArr.reverse()
+                                        }]
+       });
+       var chartImg = $("#bbands_chart").highcharts();
+        var imgData = {
+                    options: chartImg.options,
+                    filename: Android.getTicker() + "_bbands_chart",
+                    type: 'image/png',
+                    async: true
+                };
+        alert(JSON.stringify(imgData));
+            });
+</script>
+</body>
+</html>

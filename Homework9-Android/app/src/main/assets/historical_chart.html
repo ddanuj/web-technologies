@@ -1,0 +1,56 @@
+<html lang="en" >
+    <head>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+        <script src="https://code.highcharts.com/stock/highstock.js"></script>
+    </head>
+    <body>
+        <div id="historical_price_chart" class="chart"></div>
+        <script type="text/javascript">
+            $(document).ready(function(){
+                Highcharts.stockChart('historical_price_chart', {
+                                rangeSelector: {
+                                    buttons: [{
+                                        type: 'week',
+                                        count: 1,
+                                        text: '1w'
+                                    }, {
+                                        type: 'month',
+                                        count: 1,
+                                        text: '1m'
+                                    }, {
+                                        type: 'month',
+                                        count: 3,
+                                        text: '3m'
+                                    }, {
+                                        type: 'month',
+                                        count: 6,
+                                        text: '6m'
+                                    }, {
+                                        type: 'ytd',
+                                        text: 'YTD'
+                                    }, {
+                                        type: 'year',
+                                        count: 1,
+                                        text: '1y'
+                                    }, {
+                                        type: 'all',
+                                        text: 'all'
+                                    }],
+                                    selected: 1
+                                },
+                                title: {
+                                    text: Android.getTicker() + ' Stock Value'
+                                },
+                                subtitle: {
+                                    text: '<a href="https://www.alphavantage.co/ style="color: blue">Source: Alpha Vantage</a>'
+                                },
+                                series: [{
+                                    name: Android.getTicker() + ' Price',
+                                    data: JSON.parse(Android.getHistoricalData()),
+                                    type: 'area'
+                                }]
+                            });
+            });
+        </script>
+    </body>
+</html>

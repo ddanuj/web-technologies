@@ -1,0 +1,142 @@
+<resources>
+    <!-- Internal Config-->
+    <string name="app_name">Stock Info</string>
+    <string name="action_settings">Settings</string>
+    <string name="facebook_app_id">865977273568967</string>
+    <string name="fb_login_protocol_scheme">fb865977273568967</string>
+    <string name="stock_ticker">stock_ticker</string>
+
+    <!-- Application Display -->
+    <string name="main_page_title_label">Stock Market Search</string>
+    <string name="get_quote_button_label">Get Quote</string>
+    <string name="clear_button_label">Clear</string>
+    <string name="favorites_label">Favorites</string>
+    <string name="auto_refresh_switch_label">AutoRefresh </string>
+    <string name="get_quote_validation_fail_toast">Please enter a stock name or symbol</string>
+    <string name="fb_share_sucessfull">Your post was shared successfully on Facebook.</string>
+    <string name="fb_share_not_sucessfull">Your Facebook post share was unsuccessful. Please try again.</string>
+    <string name="fb_share_cancel">Facebook post share was cancelled.</string>
+    <string name="title_activity_stock_info">StockInfoActivity</string>
+    <string name="tab_text_1">CURRENT</string>
+    <string name="tab_text_2">HISTORICAL</string>
+    <string name="tab_text_3">NEWS</string>
+    <string name="current_stock_title">Stock Details</string>
+    <string name="section_format">Hello World from section: %1$d</string>
+    <string name="stock_into_table_stock_symbol">Stock Symbol</string>
+    <string name="stock_into_table_last_price">Last Price</string>
+    <string name="stock_into_table_change">Change</string>
+    <string name="stock_into_table_timestamp">Timestamp</string>
+    <string name="stock_into_table_open">Open</string>
+    <string name="stock_into_table_close">Close</string>
+    <string name="stock_into_table_day_range">Day\'s Range</string>
+    <string name="stock_into_table_volume">Volume</string>
+    <string name="indicators">Indicators</string>
+    <string name="indicators_change">Change</string>
+    <string name="sort_by_label">Sort By</string>
+    <string name="order_label">Order</string>
+
+    <!-- REST URLs -->
+    <string name="aws_common">http://csci571-homework8-stock-info-dev.us-west-1.elasticbeanstalk.com/</string>
+    <string name="auto_complete_url">auto/</string>
+    <string name="stock_info_url">quote/</string>
+    <string name="historical_info_url">/full</string>
+    <string name="news_url">/news</string>
+    <string name="news_discard_string">https://seekingalpha.com/symbol</string>
+    <string name="highcharts_export_url">http://export.highcharts.com/</string>
+
+    <!-- REST function names -->
+    <string name="price_volume_function_value">/price</string>
+    <string name="time_value">/time</string>
+    <string name="sma_function_value">/sma</string>
+    <string name="ema_function_value">/ema</string>
+    <string name="rsi_function_value">/rsi</string>
+    <string name="adx_function_value">/adx</string>
+    <string name="cci_function_value">/cci</string>
+    <string name="stoch_function_value">/stoch</string>
+    <string name="bbands_function_value">/bbands</string>
+    <string name="macd_function_value">/macd</string>
+
+    <!-- REST parameters keys
+    <string name="function_key">function</string>
+    <string name="symbol_key">symbol</string>
+    <string name="output_size_key">outputsize</string>
+    <string name="api_key_key">apikey</string>
+    <string name="interval_key">interval</string>
+    <string name="time_period_key">time_period</string>
+    <string name="series_type_key">series_type</string>
+    <string name="nbdevup_key">nbdevup</string>
+    <string name="nbdevdn_key">nbdevdn</string>-->
+
+    <!-- REST parameters values
+    <string name="output_size_value">full</string>
+    <string name="api_key_value">DKHCAAD5PDYS8JWI</string>
+    <string name="interval_value">daily</string>
+    <string name="intraday_interval_value">1min</string>
+    <string name="time_period_value">10</string>
+    <string name="bbands_time_period_value">5</string>
+    <string name="series_type_value">open</string>
+    <string name="bbands_series_type_value">close</string>
+    <string name="nbdevup_value">3</string>
+    <string name="nbdevdn_value">3</string> -->
+    
+    <!-- JSON parse strings -->
+    <string name="alpha_vantage_meta_data">Meta Data</string>
+    <string name="alpha_vantage_indicator_name">2: Indicator</string>
+    <string name="alpha_vantage_time_series_daily">Time Series (Daily)</string>
+    <string name="alpha_vantage_technical_analysis">Technical Analysis: </string>
+    <string name="alpha_vantage_stoch_slowD">SlowD</string>
+    <string name="alpha_vantage_stoch_slowK">SlowK</string>
+    <string name="alpha_vantage_bbands_real_upper_band">Real Upper Band</string>
+    <string name="alpha_vantage_bbands_real_middle_band">Real Middle Band</string>
+    <string name="alpha_vantage_bbands_real_lower_band">Real Lower Band</string>
+    <string name="alpha_vantage_macd_signal">MACD_Signal</string>
+    <string name="alpha_vantage_macd_history">MACD_Hist</string>
+    <string name="alpha_vantage_macd">MACD</string>
+    <string name="alpha_vantage_open">1. open</string>
+    <string name="alpha_vantage_high">2. high</string>
+    <string name="alpha_vantage_low">3. low</string>
+    <string name="alpha_vantage_close">4. close</string>
+    <string name="alpha_vantage_volume">5. volume</string>
+    <string name="seeking_alpha_title">title</string>
+    <string name="seeking_alpha_link">link</string>
+    <string name="seeking_alpha_pub_date">pubDate</string>
+    <string name="seeking_alpha_author">sa:author_name</string>
+
+    <!-- Indicators Spinner array -->
+    <string-array name="indicators_array">
+        <item>Price</item>
+        <item>SMA</item>
+        <item>EMA</item>
+        <item>STOCH</item>
+        <item>RSI</item>
+        <item>ADX</item>
+        <item>CCI</item>
+        <item>BBANDS</item>
+        <item>MACD</item>
+    </string-array>
+
+    <string name="choice_header">Remove from Favorites?</string>
+    <string-array name="choice_array">
+        <item>No</item>
+        <item>Yes</item>
+    </string-array>
+
+    <string-array name="sort_by_array">
+        <item></item>
+        <item>Symbol</item>
+        <item>Price</item>
+        <item>Change</item>
+        <item>Change Percent</item>
+    </string-array>
+
+    <string-array name="order_array">
+        <item></item>
+        <item>Ascending</item>
+        <item>Descending</item>
+    </string-array>
+
+    <!-- Shared Preferences -->
+    <string name="shared_preferences_key">edu_usc_cs_server_stockinfo</string>
+    <string name="favorite_list_key">favorite_list</string>
+
+</resources>

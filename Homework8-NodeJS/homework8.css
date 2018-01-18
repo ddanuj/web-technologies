@@ -1,0 +1,148 @@
+#parent_div {
+    width: 100%;
+    min-height: 100%;
+    background: url('http://cs-server.usc.edu:45678/hw/hw8/images/background.png') repeat;
+    background-size: contain;
+}
+.panel, .panel-default {
+    background-color: #ffffff;
+}
+#stock_form {
+    margin-top: 2%;
+}
+#auto_complete{
+    padding: 0.1%;
+    border: 2px solid;
+    border-radius: 5px;
+}
+#search_form_buttons{
+    margin-top: 0%;
+}
+.original-border {
+    border-color: #e5e5e5;
+}
+.red-border {
+    border-color: red;
+}
+.blue-border {
+    border-color: blue;
+}
+.md-whiteframe-1dp, .md-whiteframe-z1 {
+    box-shadow: none;
+}
+#error_msg {
+    margin-top: 2%;
+    color: red;
+}
+#body_div_search_form_label {
+    margin-top: 1%;
+}
+.body_div_search_form_buttons {
+    margin-top: 1%;
+}
+.body_div_data_inner {
+    margin: 1%;
+    margin-bottom: 3%;
+}
+#body_div_data_table {
+    margin: 1%;
+    padding-top: 6%;
+}
+.grey_background {
+    background-color: #efefef;
+}
+.glyphicon-star {
+    color: #FECF15;
+}
+.my-progress-style {
+    margin-top:5%;
+    width: 50%;
+}
+.my-progress-bar-style {
+    width:100%;
+}
+#stock_info_table {
+    margin-top: 5%;
+}
+#fb_img {
+    height: 20px;
+    width: 20px;
+}
+.high-chart {
+    width: 100%;
+    margin: 0 auto;
+    position: relative;
+}
+ul.nav-tabs > li > a {
+    margin: 0;
+    margin-right: -8px;
+}
+.table > tbody > tr > td {
+    line-height: 2.428571;
+}
+.red-color {
+    color: #bb0000;
+}
+.green-color {
+    color: #00bb00;
+}
+img {
+    height: 15px;
+    width: 15px;
+}
+::ng-deep .mat-autocomplete-panel{
+    border-radius: 10px;    
+}
+
+.fav-list-show-hide.ng-hide-remove {
+    -ms-transform: translateX(100%);
+    -moz-transform: translateX(100%);
+    -webkit-transform: translateX(100%);
+    transform: translateX(100%);
+    transition: all linear 0.5s;
+}
+
+.fav-list-show-hide.ng-hide-remove.ng-hide-remove-active {
+    -ms-transform: translateX(0);
+    -moz-transform: translateX(0);
+    -webkit-transform: translateX(0);
+    transform: translateX(0);
+}
+
+.stock-info-show-hide.ng-hide-remove {
+    -ms-transform: translateX(-100%);
+    -moz-transform: translateX(-100%);
+    -webkit-transform: translateX(-100%);
+    transform: translateX(-100%);
+    transition: all linear 0.5s;
+}
+
+.stock-info-show-hide.ng-hide-remove.ng-hide-remove-active {
+    -ms-transform: translateX(0);
+    -moz-transform: translateX(0);
+    -webkit-transform: translateX(0);
+    transform: translateX(0);
+}
+
+.lg-view {
+    display: inline-block;
+}
+
+.sm-view {
+    display: none;
+}
+
+@media screen and (max-width: 1440px) {
+    .lg-view{
+        display: none;
+    }
+    .sm-view{
+        display: inline-block;
+    }
+    #auto_complete{
+        margin-top: 4%;
+    }
+    #search_form_buttons{
+        margin-top: 6%;
+    }
+}

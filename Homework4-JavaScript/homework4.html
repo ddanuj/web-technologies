@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <style>
+        body {
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+    <h3>Enter URL for Airlines List JSON file</h3>
+    <input type="url" name="jsonUrl" id="json_in">
+    <!-- input type="hidden" name="parentURL" id="parent_url"--><br><br>
+    <button type="submit" onclick="prepareTable()">Submit Query</button>
+    <script type="text/javascript">
+        function getJson() {
+            var jsonUrl = document.getElementById("json_in").value;
+            if (jsonUrl == null || jsonUrl == "") {
+                alert("URL for Json file cannot be empty!");
+            } else {
+                var jsonHttp, jsonDoc;
+                if (window.XMLHttpRequest) {
+                    jsonHttp = new XMLHttpRequest();
+                } else {
+                    jsonHttp = new ActiveXObject("Microsoft.XMLHTTP");
+                }
+                jsonHttp.open("GET", jsonUrl, false);
+                jsonHttp.send();
+                jsonDoc = jsonHttp.responseText;
+                if (jsonDoc.toLowerCase().includes("not found")) {
+                    alert("The requested JSON URL was not found on this server!");
+                } else {
+                    return jsonDoc;
+                }
+            }
+            return null;
+        }
+
+        function prepareTable() {
+            var parentUrl = window.parent.location.href.toString();
+            var jsonData = getJson();
+            if (jsonData != null) {
+                try {
+                    var data = JSON.parse(jsonData);
+                    if (data != null) {
+                        //Data Rows - Check for files with no useful data
+                        var airlineRowList = data.Mainline.Table.Row;
+                        if (airlineRowList == null || airlineRowList == "") {
+                            alert("There are no airlines present in this file.");
+                            newWindow.close();
+                            return;
+                        }
+
+                        //open a new window and do everything there
+                        var newWindow = window.open("", "AirlineTable", "width=1050,height=850,scrollbars=yes");
+                        //newWindow.document.write("<p>This is 'MsgWindow'. I am 200px wide and 100px tall!</p>");
+
+                        //create table
+                        var bdy = newWindow.document.getElementsByTagName("body")[0];
+                        var airlineTbl = newWindow.document.createElement("table");
+                        airlineTbl.setAttribute("border", "1");
+                        var airlineTbdy = newWindow.document.createElement("tbody");
+
+                        //insert head data
+                        var airlineColList = data.Mainline.Table.Header.Data;
+                        var airlineHeadTr = newWindow.document.createElement("tr");
+                        for (var i = 0; i < airlineColList.length; i++) {
+                            var airlineHeadTh = newWindow.document.createElement("th");
+                            airlineHeadTh.appendChild(newWindow.document.createTextNode(airlineColList[i]));
+                            airlineHeadTr.appendChild(airlineHeadTh);
+                        }
+                        airlineTbdy.appendChild(airlineHeadTr);
+
+                        for (var i = 0; i < airlineRowList.length; i++) {
+                            var airlineTr = newWindow.document.createElement("tr");
+
+                            //Extract Data from JSON
+                            var airline = airlineRowList[i].Airline;
+                            var iata = airlineRowList[i].IATA;
+                            var hubs = airlineRowList[i].Hubs.Hub;
+                            var notes = airlineRowList[i].Notes;
+                            var homePage = airlineRowList[i].HomePage;
+                            var plane = airlineRowList[i].Plane;
+
+                            //Construct table Elements
+                            //Airline
+                            var airlineTd = newWindow.document.createElement("td");
+                            airlineTd.appendChild(newWindow.document.createTextNode(airline));
+                            airlineTr.appendChild(airlineTd);
+
+                            //IATA
+                            var iataTd = newWindow.document.createElement("td");
+                            iataTd.appendChild(newWindow.document.createTextNode(iata));
+                            airlineTr.appendChild(iataTd);
+
+                            //Hubs
+                            var hubTd = newWindow.document.createElement("td");
+                            var hubListUlElement = newWindow.document.createElement("ul");
+                            for (var j = 0; j < hubs.length; j++) {
+                                var hubListElement = newWindow.document.createElement("li");
+                                if (j == 0) {
+                                    //Highlight the first hub
+                                    var strongElement = newWindow.document.createElement("strong");
+                                    strongElement.appendChild(newWindow.document.createTextNode(hubs[j]));
+                                    hubListElement.appendChild(strongElement);
+                                } else {
+                                    hubListElement.appendChild(newWindow.document.createTextNode(hubs[j]));
+                                }
+                                hubListUlElement.appendChild(hubListElement);
+                            }
+                            hubTd.appendChild(hubListUlElement);
+                            airlineTr.appendChild(hubTd);
+
+                            //Notes
+                            var notesTd = newWindow.document.createElement("td");
+                            notesTd.appendChild(newWindow.document.createTextNode(notes));
+                            airlineTr.appendChild(notesTd);
+
+                            //HomePage
+                            var homePageTd = newWindow.document.createElement("td");
+                            var homePageLink = newWindow.document.createElement("a");
+                            homePageLink.setAttribute("href", homePage);
+                            homePageLink.appendChild(newWindow.document.createTextNode(homePage));
+                            homePageTd.appendChild(homePageLink);
+                            airlineTr.appendChild(homePageTd);
+
+                            //Plane
+                            var planeTd = newWindow.document.createElement("td");
+                            var planeLink = newWindow.document.createElement("img");
+                            planeLink.setAttribute("src", plane);
+                            planeLink.setAttribute("height", "200");
+                            planeTd.appendChild(planeLink);
+                            airlineTr.appendChild(planeTd);
+
+                            airlineTbdy.appendChild(airlineTr);
+                        }
+
+                        airlineTbl.appendChild(airlineTbdy);
+                        bdy.appendChild(airlineTbl);
+                        newWindow.URL = parentUrl;
+                    } else {
+                        return;
+                    }
+                } catch (error) {
+                    alert("The JSON file provided is incorrect.\n\n" + error);
+                    return;
+                }
+            } else {
+                return;
+            }
+        }
+    </script>
+    <noscript></noscript>
+</body>
+
+</html>

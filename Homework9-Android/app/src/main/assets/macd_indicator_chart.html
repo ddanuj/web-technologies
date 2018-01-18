@@ -1,0 +1,77 @@
+<html lang="en" >
+<head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://code.highcharts.com/stock/highstock.js"></script>
+</head>
+<body>
+<div id="macd_chart" class="chart"></div>
+<script type="text/javascript">
+           $(document).ready(function(){
+                var macdSignalJson = $.parseJSON(Android.getMacdSignal());
+                var macdHistoryJson = $.parseJSON(Android.getMacdHistory());
+                var macdJson = $.parseJSON(Android.getMacd());
+       var macdSignalArr = new Array();
+            $.each(macdSignalJson, function (key, value) {
+                $.each(value, function (key1, value1) {
+                    macdSignalArr.push(new Array(Number(key1), value1));
+                });
+            });
+       var macdHistoryArr = new Array();
+            $.each(macdHistoryJson, function (key, value) {
+                $.each(value, function (key1, value1) {
+                    macdHistoryArr.push(new Array(Number(key1), value1));
+                });
+            });
+       var macdArr = new Array();
+            $.each(macdJson, function (key, value) {
+                $.each(value, function (key1, value1) {
+                    macdArr.push(new Array(Number(key1), value1));
+                });
+            });
+       Highcharts.chart('macd_chart', {
+       chart: {
+                                            zoomType: 'x'
+                                        },
+                                        title: {
+                                            text: Android.getTitle()
+                                        },
+                                        subtitle: {
+                                            text: '<a href="https://www.alphavantage.co/ style="color: blue">Source: Alpha Vantage</a>'
+                                        },
+                                        xAxis: [{
+                                            type: 'datetime',
+                                            labels: {
+                                                format: '{value:%m/%d}'
+                                            }
+                                        }],
+                                        yAxis: [{
+                                            title: {
+                                                text: Android.getActiveChart().toUpperCase()
+                                            }
+                                        }],
+                                        series: [{
+                                            name: Android.getTicker() + ' MACD',
+                                            type: 'line',
+                                            data: macdArr.reverse()
+                                        },{
+                                            name: Android.getTicker() + ' MACD_Hist',
+                                            type: 'line',
+                                            data: macdHistoryArr.reverse()
+                                        },{
+                                            name: Android.getTicker() + ' MACD_Signal',
+                                            type: 'line',
+                                            data: macdSignalArr.reverse()
+                                        }]
+       });
+       var chartImg = $("#macd_chart").highcharts();
+        var imgData = {
+                    options: chartImg.options,
+                    filename: Android.getTicker() + "_macd_chart",
+                    type: 'image/png',
+                    async: true
+                };
+        alert(JSON.stringify(imgData));
+            });
+</script>
+</body>
+</html>
